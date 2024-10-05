@@ -1,0 +1,6 @@
+---
+Tenant: tenant
+Namespaces:
+  - dev
+  - qa
+  - prod

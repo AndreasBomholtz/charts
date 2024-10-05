@@ -1,0 +1,13 @@
+{{- range .Values.Namespaces }}
+{{-  $name := printf "%s-%s" $.Values.Tenant . -}}
+{{-  $name := regexReplaceAll "([^a-zA-Z0-9])+" $name "-" -}}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $name }}
+  labels:
+    name: {{ $name }}
+---
+{{- end }}
+
