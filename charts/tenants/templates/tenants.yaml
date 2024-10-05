@@ -50,7 +50,7 @@ roleRef:
   kind: Role
   name: tenant-role
 subjects:
-  - namespace: default
+  - namespace: {{ $namespace }}
     kind: ServiceAccount
     name: {{ $tenant }}
 ---
