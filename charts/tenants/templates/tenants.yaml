@@ -1,13 +1,58 @@
+
 {{- range .Values.Namespaces }}
-{{-  $name := printf "%s-%s" $.Values.Tenant . -}}
-{{-  $name := regexReplaceAll "([^a-zA-Z0-9])+" $name "-" -}}
+{{- $tenant := regexReplaceAll "([^a-zA-Z0-9])+" $.Values.Tenant "-" -}}
+{{- $namespace := printf "%s-%s" $.Values.Tenant . -}}
+{{- $namespace := regexReplaceAll "([^a-zA-Z0-9])+" $namespace "-" -}}
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ $name }}
+  name: {{ $namespace }}
   labels:
-    name: {{ $name }}
+    name: {{ $namespace }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $tenant }}
+  namespace: {{ $namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenant-role
+  namespace: {{ $namespace }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - configmaps
+      - secrets
+      - crontabs
+      - deployments
+      - jobs
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tenant-role-binding
+  namespace: {{ $namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tenant-role
+subjects:
+  - namespace: default
+    kind: ServiceAccount
+    name: {{ $tenant }}
 ---
 {{- end }}
 
