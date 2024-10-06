@@ -38,10 +38,9 @@ jobs:
         tags: "${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
 
     - name: Update Chart.yaml with new version
-      uses: rmeneely/update-yaml@v1
+      uses: mikefarah/yq@master
       with:
-        infile: './charts/12factor/Chart.yaml'
-        varlist: appVersion=${{ steps.version.outputs.version }},version=${{ steps.version.outputs.version }}
+        cmd: yq -y -i '.version = "${{ steps.version.outputs.version }}" | .appVersion = "${{ steps.version.outputs.version }}"' ./charts/12factor/Chart.yaml
 
     - name: Commit the changes to Chart.yaml
       uses: devops-infra/action-commit-push@master
