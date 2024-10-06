@@ -40,7 +40,7 @@ jobs:
     - name: Update Chart.yaml with new version
       uses: mikefarah/yq@master
       with:
-        cmd: yq -y -i '.version = "${{ steps.version.outputs.version }}" | .appVersion = "${{ steps.version.outputs.version }}"' ./charts/12factor/Chart.yaml
+        cmd: yq -i '.version = "${{ steps.version.outputs.version }}" | .appVersion = "${{ steps.version.outputs.version }}"' ./charts/12factor/Chart.yaml
 
     - name: Commit the changes to Chart.yaml
       uses: devops-infra/action-commit-push@master
