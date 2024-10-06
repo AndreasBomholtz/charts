@@ -37,7 +37,7 @@ jobs:
         push: true
         tags: "${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
 
-    - name: Update values.yaml
+    - name: Update Chart.yaml
       uses: fjogeleit/yaml-update-action@main
       with:
           valueFile: './charts/12factor/Chart.yaml'
@@ -48,6 +48,6 @@ jobs:
           commitChange: true
           changes: |
             {
-              "version": "${{ steps.version.outputs.version }}",
-              "appVersion": "${{ steps.version.outputs.version }}"
+              ".version": "${{ steps.version.outputs.version }}",
+              ".appVersion": "${{ steps.version.outputs.version }}"
             }
