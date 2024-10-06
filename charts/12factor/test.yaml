@@ -1,0 +1,105 @@
+---
+# Source: 12factor/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: 12factor
+  labels:
+    helm.sh/chart: 12factor-0.1.0
+    app.kubernetes.io/name: 12factor
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5005
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: 12factor
+    app.kubernetes.io/instance: release-name
+---
+# Source: 12factor/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: 12factor
+  labels:
+    helm.sh/chart: 12factor-0.1.0
+    app.kubernetes.io/name: 12factor
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: 12factor
+      app.kubernetes.io/instance: release-name
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: 12factor-0.1.0
+        app.kubernetes.io/name: 12factor
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/version: "1.16.0"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      serviceAccountName: tenant
+      securityContext:
+        {}
+      containers:
+        - name: 12factor
+          securityContext:
+            {}
+          image: "andreasbomholtz/development:1.16.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5005
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+---
+# Source: 12factor/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "12factor-test-connection"
+  labels:
+    helm.sh/chart: 12factor-0.1.0
+    app.kubernetes.io/name: 12factor
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['12factor:5005']
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+  restartPolicy: Never
