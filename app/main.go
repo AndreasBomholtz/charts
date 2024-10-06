@@ -31,7 +31,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "Served-By: %v\n", hostname)
     fmt.Fprintf(w, "Serving-Time: %s\n", time.Since(startTime))
     
-    fmt.Fprintf(w, "\n11Environment variables: %s\n\n", os.Getenv("ENV"))
+    fmt.Fprintf(w, "\nEnvironment variables: %s\n\n", os.Getenv("ENV"))
     fmt.Fprintf(w, "ENV: %s\n", os.Getenv("ENV"))
     fmt.Fprintf(w, "DB_HOST: %s\n", os.Getenv("DB_HOST"))
     fmt.Fprintf(w, "DB_PORT: %s\n", os.Getenv("DB_PORT"))
