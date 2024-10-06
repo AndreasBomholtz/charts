@@ -28,21 +28,29 @@ jobs:
        username: ${{ secrets.DOCKERHUB_USERNAME }}
        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Extract metadata (tags, labels) for Docker
-      id: meta
-      uses: docker/metadata-action@v5
+    - name: Get next version
+      uses: reecetech/version-increment@2024.4.3
+      id: version
       with:
-         images: ${{ env.IMAGE_NAME }}
-         tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+        scheme: semver
+        increment: patch
 
     - name: Build and push to dockerhub
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
+        tags: "${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
+
+    - name: Update values.yaml
+      uses: fjogeleit/yaml-update-action@main
+      with:
+          valueFile: './charts/12factor/Chart.yaml'
+          propertyPath: 'version'
+          value: ${{ steps.version.outputs.version }}
+          commitChange: true
+          changes: |
+            {
+              "version": "${{ steps.version.outputs.version }}",
+              "appVersion": "${{ steps.version.outputs.version }}"
+            }
