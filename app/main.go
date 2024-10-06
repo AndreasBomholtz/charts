@@ -27,7 +27,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
         fmt.Fprint(w, "Error:", err)
     }
 
-    fmt.Fprintf(w, "Service/Pod Info: %s\n\n", os.Getenv("ENV"))
+    fmt.Fprintf(w, "Service / Pod Info: %s\n\n", os.Getenv("ENV"))
     fmt.Fprintf(w, "Served-By: %v\n", hostname)
     fmt.Fprintf(w, "Serving-Time: %s\n", time.Since(startTime))
     
