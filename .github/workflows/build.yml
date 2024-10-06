@@ -3,7 +3,13 @@ name: Build and push Docker image to dockerhub
 on:
   push:
     branches: [ "main" ]
-    
+    tags:
+      - 'v*'
+
+env:
+  REGISTRY: dockerhub.com
+  IMAGE_NAME: andreasbomholtz/development
+
 jobs:
 
   build:
@@ -19,8 +25,18 @@ jobs:
        username: ${{ secrets.DOCKERHUB_USERNAME }}
        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+         tags: |
+           type=semver,pattern={{version}}
+
     - name: Build and push to dockerhub
       uses: docker/build-push-action@v5
       with:
+        context: .
         push: true
-        tags: andreasbomholtz/development:latest
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
