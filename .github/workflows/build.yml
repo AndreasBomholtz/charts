@@ -29,17 +29,24 @@ jobs:
       with:
         file-path: './charts/12factor/Chart.yaml'
 
+    - name: Bump version
+      uses: actions-ecosystem/action-bump-semver@v1
+      id: bump-semver
+      with:
+        current_version: ${{ steps.yaml.outputs.version }}
+        level: patch
+
     - name: Build and push to dockerhub
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: "${{ env.IMAGE_NAME }}:${{ steps.yaml.outputs.version }}"
+        tags: "${{ env.IMAGE_NAME }}:${{ steps.bump-semver.outputs.new_version }}"
 
     - name: Update Chart.yaml with new version
       uses: mikefarah/yq@master
       with:
-        cmd: yq -i '.version = "${{ steps.yaml.outputs.version }}" | .appVersion = "${{ steps.yaml.outputs.version }}"' ./charts/12factor/Chart.yaml
+        cmd: yq -i '.version = "${{ steps.bump-semver.outputs.new_version }}" | .appVersion = "${{ steps.bump-semver.outputs.new_version }}"' ./charts/12factor/Chart.yaml
 
     - name: Commit the changes to Chart.yaml
       uses: devops-infra/action-commit-push@master
