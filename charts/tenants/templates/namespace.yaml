@@ -1,0 +1,10 @@
+{{- range .Values.Namespaces }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "tenant.namespace" (dict "ns" .name "g" $) }}
+  labels:
+    name: {{ include "tenant.namespace" (dict "ns" .name "g" $) }}
+{{- end }}
+

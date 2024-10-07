@@ -1,0 +1,162 @@
+---
+# Source: tenants/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tenant-dev
+  labels:
+    name: tenant-dev
+---
+# Source: tenants/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tenant-qa
+  labels:
+    name: tenant-qa
+---
+# Source: tenants/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tenant-prod
+  labels:
+    name: tenant-prod
+---
+# Source: tenants/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tenant
+  namespace: tenant-dev
+---
+# Source: tenants/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tenant
+  namespace: tenant-qa
+---
+# Source: tenants/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tenant
+  namespace: tenant-prod
+---
+# Source: tenants/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenant-role
+  namespace: tenant-dev
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - configmaps
+      - secrets
+      - crontabs
+      - deployments
+      - jobs
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+---
+# Source: tenants/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenant-role
+  namespace: tenant-qa
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - configmaps
+      - secrets
+      - crontabs
+      - deployments
+      - jobs
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+---
+# Source: tenants/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenant-role
+  namespace: tenant-prod
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - configmaps
+      - secrets
+      - crontabs
+      - deployments
+      - jobs
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+---
+# Source: tenants/templates/rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tenant-role-binding
+  namespace: tenant-dev
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tenant-role
+subjects:
+  - namespace: tenant-dev
+    kind: ServiceAccount
+    name: tenant
+---
+# Source: tenants/templates/rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tenant-role-binding
+  namespace: tenant-qa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tenant-role
+subjects:
+  - namespace: tenant-qa
+    kind: ServiceAccount
+    name: tenant
+---
+# Source: tenants/templates/rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tenant-role-binding
+  namespace: tenant-prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tenant-role
+subjects:
+  - namespace: tenant-prod
+    kind: ServiceAccount
+    name: tenant

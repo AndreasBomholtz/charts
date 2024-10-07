@@ -1,6 +1,6 @@
 ---
 Tenant: tenant
 Namespaces:
-  - dev
-  - qa
-  - prod
+  - name: dev
+  - name: qa
+  - name: prod

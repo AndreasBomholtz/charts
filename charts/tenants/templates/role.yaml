@@ -1,0 +1,25 @@
+{{- range .Values.Namespaces }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenant-role
+  namespace: {{ include "tenant.namespace" (dict "ns" .name "g" $) }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - configmaps
+      - secrets
+      - crontabs
+      - deployments
+      - jobs
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+{{- end -}}
